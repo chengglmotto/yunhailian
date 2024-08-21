@@ -1,0 +1,291 @@
+app:
+  description: 工作流
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 电商客服对话机器人--【分类、RAG、LLM】
+kind: app
+version: 0.1.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+    opening_statement: 亲亲您好，我在的哦，请问有什么可以帮您的呢?
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: start
+        targetType: question-classifier
+      id: 1711528708197-1711528709608
+      source: '1711528708197'
+      sourceHandle: source
+      target: '1711528709608'
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 1711528709608-1711528768556
+      source: '1711528709608'
+      sourceHandle: '1711528736036'
+      target: '1711528768556'
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: question-classifier
+        targetType: answer
+      id: 1711528709608-1711528775142
+      source: '1711528709608'
+      sourceHandle: '1711528737066'
+      target: '1711528775142'
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1711528768556-1711528802931
+      source: '1711528768556'
+      sourceHandle: source
+      target: '1711528802931'
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: answer
+      id: 1711528802931-1711528833796
+      source: '1711528802931'
+      sourceHandle: source
+      target: '1711528833796'
+      targetHandle: target
+      type: custom
+    nodes:
+    - data:
+        desc: Define the initial parameters for launching a workflow
+        selected: false
+        title: Start
+        type: start
+        variables: []
+      height: 97
+      id: '1711528708197'
+      position:
+        x: 79.5
+        y: 714.5
+      positionAbsolute:
+        x: 79.5
+        y: 714.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        classes:
+        - id: '1711528736036'
+          name: Question related to dogs, products, buy,commodity, return, shopping
+        - id: '1711528737066'
+          name: Other questions
+        desc: 'Define the classification conditions of user questions, LLM can define
+          how the conversation progresses based on the classification description. '
+        instructions: ''
+        model:
+          completion_params:
+            frequency_penalty: 0
+            max_tokens: 512
+            presence_penalty: 0
+            temperature: 0.7
+            top_p: 0.4
+          mode: chat
+          name: qwen-max
+          provider: tongyi
+        query_variable_selector:
+        - '1711528708197'
+        - sys.query
+        selected: false
+        title: Question Classifier
+        topics: []
+        type: question-classifier
+      height: 291
+      id: '1711528709608'
+      position:
+        x: 361.7857142660406
+        y: 714.5
+      positionAbsolute:
+        x: 361.7857142660406
+        y: 714.5
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        dataset_ids:
+        - 429ce16a-7200-4ecc-b81d-fb4a54097b2d
+        desc: 'Retrieve knowledge on after sales SOP. '
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: weighted_score
+          reranking_model:
+            model: ''
+            provider: ''
+          score_threshold: null
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 1
+            vector_setting:
+              embedding_model_name: text-embedding-v1
+              embedding_provider_name: tongyi
+              vector_weight: 0
+        query_variable_selector:
+        - '1711528708197'
+        - sys.query
+        retrieval_mode: single
+        selected: false
+        single_retrieval_config:
+          model:
+            completion_params: {}
+            mode: chat
+            name: qwen-max
+            provider: tongyi
+        title: 'Knowledge Retrieval '
+        type: knowledge-retrieval
+      dragging: false
+      height: 135
+      id: '1711528768556'
+      position:
+        x: 645.5
+        y: 714.5
+      positionAbsolute:
+        x: 645.5
+        y: 714.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        answer: '亲亲对不起哦，本机器人目前能力有限，只能回复商城客服有关问题。还请重新提问。。。 '
+        desc: ''
+        selected: false
+        title: Answer
+        type: answer
+        variables: []
+      height: 135
+      id: '1711528775142'
+      position:
+        x: 645.5
+        y: 949.9271482199147
+      positionAbsolute:
+        x: 645.5
+        y: 949.9271482199147
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1711528768556'
+          - result
+        desc: ''
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            frequency_penalty: 0
+            max_tokens: 512
+            presence_penalty: 0
+            temperature: 0.7
+            top_p: 0.4
+          mode: chat
+          name: qwen-max
+          provider: tongyi
+        prompt_template:
+        - id: 570133a9-b217-4c14-bab8-afae5fc2584f
+          role: system
+          text: "Use the following context as your learned knowledge, inside <context></context>\
+            \ XML tags.\n<context>\n{{#context#}}\n</context>\nWhen answer to user:\n\
+            - If you don't know, just say that you don't know.\n- If you don't know\
+            \ when you are not sure, ask for clarification.\n- the tone of the answer\
+            \ should be polite, cordial, and in line with the service attitude of\
+            \ professional customer service staff.\nAvoid mentioning that you obtained\
+            \ the information from the context.\nAvoid mentioning specific e-commerce\
+            \ platform names.\nAvoid \nAvoid mentioning words that violate advertising\
+            \ laws, including \"best\", \"international/national first\".\nAvoid \n\
+            And answer according to the language of the user's question."
+        selected: false
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      dragging: false
+      height: 97
+      id: '1711528802931'
+      position:
+        x: 928.5
+        y: 714.5
+      positionAbsolute:
+        x: 928.5
+        y: 714.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        answer: '{{#1711528802931.text#}}'
+        desc: ''
+        selected: false
+        title: Answer 2
+        type: answer
+        variables:
+        - value_selector:
+          - '1711528802931'
+          - text
+          variable: text
+      dragging: false
+      height: 105
+      id: '1711528833796'
+      position:
+        x: 1211.5
+        y: 714.5
+      positionAbsolute:
+        x: 1211.5
+        y: 714.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    viewport:
+      x: 94.89999999999941
+      y: -304.4000000000003
+      zoom: 0.7000000000000004
